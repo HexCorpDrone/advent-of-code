@@ -4,13 +4,14 @@ use std::io::{BufRead, BufReader, Lines};
 
 fn main() {
 
-    let mut values: Vec<i32> = Vec::new();
+    //Make new vector to hold values from file
+    let mut values: Vec<u32> = Vec::new();
 
     match get_iterator_from_args(){
         Ok(lines) => {
             for line in lines {
                 //Parse each line in the file from string to i32.
-                let line: i32 = line.unwrap().parse::<i32>().unwrap();
+                let line: u32 = line.unwrap().parse::<u32>().unwrap();
                 //Add it to the list of values.
                 values.push(line);
             }
@@ -19,6 +20,7 @@ fn main() {
     };
 
     part1(values)
+    //part2(values)
 
 }
 
@@ -34,7 +36,7 @@ fn get_iterator_from_args() -> Result<Lines<BufReader<File>>, Box<dyn std::error
     return Ok(lines);
 }
 
-fn part1(values: Vec<i32>) {
+fn part1(values: Vec<u32>) {
     for outer_value in &values {
         for inner_value in &values {
             if inner_value + outer_value == 2020 {
@@ -45,6 +47,6 @@ fn part1(values: Vec<i32>) {
     }
 }
 
-fn part2(values: Vec<i32>) {
+fn part2(values: Vec<u32>) {
 
 }
