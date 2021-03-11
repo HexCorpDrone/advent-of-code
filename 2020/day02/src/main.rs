@@ -11,6 +11,17 @@ fn main() {
     let password_format_regex: Regex = Regex::new(r"(^\d{1,2})-(\d{1,2}) ([a-z]): (.+$)").unwrap();
     let mut good_password_count: usize = 0;
 
+    match part_one(password_format_regex) {
+        Ok(pw_found) => println!("Good passwords: {}", pw_found),
+        Err(err) => panic!(err),
+    }
+
+}
+
+fn part_one(pw_format: Regex) -> Result<usize, String> {
+
+    let mut good_passwords: usize = 0;
+
     match get_file_iterator_from_args(){
         Ok(lines) => {
             for line in lines {
@@ -18,7 +29,7 @@ fn main() {
                     Ok(password_full_string) => {
                         println!("Full password: {}", password_full_string);
 
-                        let captures: Captures = password_format_regex.captures(&password_full_string).unwrap();
+                        let captures: Captures = pw_format.captures(&password_full_string).unwrap();
 
                         let min_count: usize = captures.get(1).unwrap().as_str().parse::<usize>().unwrap();
                         let max_count: usize = captures.get(2).unwrap().as_str().parse::<usize>().unwrap();
@@ -31,28 +42,23 @@ fn main() {
 
                         if password.matches(character).count() <= max_count && password.matches(character).count() >= min_count {
                             println!("Good password found.");
-                            good_password_count += 1;
+                            good_passwords += 1;
                         }
 
                     }
-                    Err(no_password) => {
-                        panic!(no_password);
-                    }
+                    Err(no_password) => println!("No password found for this line. Skipping.")
                 }
             }
         }
-        Err(err) => panic!("{}", err)
+        Err(err) => return Err("Could not get iterator of provided file.".to_string())
     }
 
-    println!("Good passwords: {}", good_password_count);
+    return Ok(good_passwords);
 
-}
-
-fn part_one() -> Result<usize, String> {
-    return Ok(216);
 }
 
 fn part_two() -> Result<usize, String> {
+
     return Ok(5890);
 }
 
