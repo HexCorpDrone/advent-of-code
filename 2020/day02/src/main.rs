@@ -11,14 +11,12 @@ fn main() {
     let password_format_regex: Regex = Regex::new(r"(^\d{1,2})-(\d{1,2}) ([a-z]): (.+$)").unwrap();
     let mut good_password_count: usize = 0;
 
-    match part_one(password_format_regex) {
-        Ok(pw_found) => println!("Good passwords: {}", pw_found),
-        Err(err) => panic!(err),
-    }
+    println!("Good passwords for part one: {}", part_one(&password_format_regex));
+    println!("Good passwords for part two: {}", part_two(&password_format_regex));
 
 }
 
-fn part_one(pw_format: Regex) -> Result<usize, String> {
+fn part_one(pw_regex: &Regex) -> usize {
 
     let mut good_passwords: usize = 0;
 
@@ -29,7 +27,7 @@ fn part_one(pw_format: Regex) -> Result<usize, String> {
                     Ok(password_full_string) => {
                         println!("Full password: {}", password_full_string);
 
-                        let captures: Captures = pw_format.captures(&password_full_string).unwrap();
+                        let captures: Captures = pw_regex.captures(&password_full_string).unwrap();
 
                         let min_count: usize = captures.get(1).unwrap().as_str().parse::<usize>().unwrap();
                         let max_count: usize = captures.get(2).unwrap().as_str().parse::<usize>().unwrap();
@@ -50,16 +48,39 @@ fn part_one(pw_format: Regex) -> Result<usize, String> {
                 }
             }
         }
-        Err(err) => return Err("Could not get iterator of provided file.".to_string())
+        Err(err) => { println!("{}", err); return 0; }
     }
 
-    return Ok(good_passwords);
+    return good_passwords;
 
 }
 
-fn part_two() -> Result<usize, String> {
+fn part_two(pw_regex: &Regex) -> usize {
 
-    return Ok(5890);
+    let mut good_passwords: usize = 0;
+
+    match get_file_iterator_from_args(){
+        Ok(lines) => {
+            for line in lines {
+
+                let line_str: String = line.unwrap();
+
+                let captures: Captures = pw_regex.captures(&line_str).unwrap();
+                let position_one: usize = captures.get(1).unwrap().as_str().parse::<usize>().unwrap();
+                let position_two: usize = captures.get(2).unwrap().as_str().parse::<usize>().unwrap();
+                let character: char = captures.get(3).unwrap().as_str().chars().next().expect("Couldn't find character");
+                let password: &str = captures.get(4).unwrap().as_str();
+
+                if (password.chars().nth(position_one).unwrap() == character) ^ (password.chars().nth(position_two).unwrap() == character) {
+                    println!("BEEPBOOP");
+                }
+
+            }
+        }
+        Err(error) => { println!("{}", error); return 0;}
+    }
+
+    return 0;
 }
 
 fn get_file_iterator_from_args() -> Result<Lines<BufReader<File>>, Box<dyn std::error::Error>>{
